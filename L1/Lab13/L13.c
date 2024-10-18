@@ -71,6 +71,7 @@ int main(int argc, char *argv[]) {
                     break;
             }
             break;
+
         case NOT_NUM_L_INT:
             printf("The argument is not a decimal number\n");
             break;

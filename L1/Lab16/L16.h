@@ -1,8 +1,19 @@
-//
-// Created by 79151 on 09.10.2024.
-//
+#ifndef __kOpts_h__
+#define __kOpts_h__
+#include <stdlib.h>
 
-#ifndef L1_L12_H
-#define L1_L12_H
+int str_to_double(char *str, double *number);
+double integral_a(double x);
+double integral_b(double x);
+double integral_c(double x);
+double integral_d(double x);
+double integrate(double epsilon, double (*integrate_function)(double));
+double rectangle_method(int number, double epsilon, double (*integrate_function)(double));
 
-#endif //L1_L12_H
+enum ERRORS{
+    OK,
+    INVALID_INPUT,
+    PROBLEMS_WITH_EPS,
+};
+
+#endif
