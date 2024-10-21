@@ -105,7 +105,9 @@ double rectangle_method(int number, double epsilon, double (*integrate_function)
     for (i = epsilon; i < number - epsilon; i++) {
         x = h * i;
         sum += integrate_function(x);
+
     }
+    printf("%f\n", i);
     return h * sum;
 }
 

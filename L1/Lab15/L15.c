@@ -1,7 +1,6 @@
 #include <stdio.h>
 #include <math.h>
-#include <stdlib.h>
-#include <string.h>
+
 double Factorial(int n) {
     double answer = 1.0;
     for (int k = 1; k <= n; k++) {
@@ -57,9 +56,6 @@ int summB(double* parametrs, double* answer) {
 int summC(double* parametrs, double* answer) {
     double epsilon = parametrs[0];
     double x = parametrs[1];
-    //if (fabs(x) >= 1) {// x =< -1 и x >= 1 Расходится
-    //    return 2;
-    //}
     int n = 0;
     double current_element = 1;
     double summ = 0;
@@ -70,9 +66,7 @@ int summC(double* parametrs, double* answer) {
         summ += current_element;
         current_element = (current_element * 27 * n * n * n * x * x) /
                           (3 * n * (3 * n - 1) * (3 * n - 2));
-        if (fabs(current_element) - fabs(last_element) > 0) {// n - (n - 1) > 0
-            return 2;
-        }
+
     }
     *answer = summ;
     return 0;
@@ -81,9 +75,6 @@ int summC(double* parametrs, double* answer) {
 int summD(double* parametrs, double* answer) {
     double epsilon = parametrs[0];
     double x = parametrs[1];
-    //if (fabs(x) > 1) {
-    //    return 2;
-    //}
     int n = 1;
     double last_element = 0;
     double current_element = -1 * x * x / 2;
@@ -103,15 +94,11 @@ int summD(double* parametrs, double* answer) {
 }
 
 int my_atof(const char* string, double* eps) {
-    int sign = 1, signs = 0, dots = 0, numbers = 0;
+    int sign = 1, dots = 0;
     double result = 0.0, fraction = 1.0;
     for (int i = 0; string[i] != '\0'; ++i) {
-        //if (string[0] == NULL) {
-        //    printf("Incorrect options\n");
-        //    break;
 
-        if (string[i] == '-' && signs == 0) {
-            signs = 1;
+        if (string[i] == '-' && sign == 1) {
             sign = -1;
         }
         else if (string[i] == '.' && dots == 0) {
@@ -135,6 +122,9 @@ int my_atof(const char* string, double* eps) {
 int GetOpts(int argc, char** argv, double* parametrs) {
     char* procceding_option;
     int incorrect_input;
+    if (argc != 3) {
+        return 1;
+    }
     for (int i = 0; i < 2; i++) {
         procceding_option = argv[i + 1];
         incorrect_input = my_atof(procceding_option, &parametrs[i]);
@@ -145,30 +135,26 @@ int GetOpts(int argc, char** argv, double* parametrs) {
     if (parametrs[0] <= 0.0) {
         return 1;
     }
-    //printf("%f\n", sign * current_number);
     return 0;
 }
 
 
 int main(int argc, char** argv) {
     double parametrs[2];
+
     if (GetOpts(argc, argv, parametrs)) {
         printf("Incorrect options\n");
         return 1;
     }
-    printf("%f, %f\n", parametrs[0], parametrs[1]);
+    printf("Epsilon: %f, X: %f\n", parametrs[0], parametrs[1]);
+
     double summ;
-    if (!(summA(parametrs, &summ))) {
-        printf("A: %f\n", summ);
-    }
-    if (!(summB(parametrs, &summ))) {
-        printf("B: %f\n", summ);
-    }
+    summA(parametrs, &summ);
+    printf("A: %f\n", summ);
+    summB(parametrs, &summ);
+    printf("B: %f\n", summ);
     if (!(summC(parametrs, &summ))) {
         printf("C: %f\n", summ);
-    }
-    else {
-        printf("C: don`t converges\n");
     }
     if (!(summD(parametrs, &summ))) {
         printf("D: %f\n", summ);

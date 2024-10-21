@@ -136,13 +136,13 @@ void print_res(int mistake, double real1, double imag1, double real2, double ima
 int is_duplicate(Coefficients seen[], int size, double a, double b, double c) {
     for (int i = 0; i < size; ++i) {
         if (fabs(seen[i].a - a) < DBL_EPSILON && fabs(seen[i].b - b) < DBL_EPSILON && fabs(seen[i].c - c) < DBL_EPSILON) {
-            return 1; // Дубликат найден
+            return 1;
         }
     }
-    return 0; // Нет дубликатов
+    return 0;
 }
 
-// Решение квадратного уравнения
+
 // Решение квадратного уравнения с поддержкой комплексных корней
 int solve_quadratic_equation(double eps, double a, double b, double c,
                              double *real1, double *imag1,

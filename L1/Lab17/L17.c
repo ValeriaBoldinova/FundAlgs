@@ -1,7 +1,6 @@
 #include <stdio.h>
-#include <string.h>
 #include <stdlib.h>
-#include <limits.h>
+#include <string.h>
 #include <windows.h>
 
 enum err {
@@ -14,7 +13,7 @@ enum err {
 };
 
 int get_absolute_path(const char *input_path, char *output_realpath);
-int check_unique_paths(char *path1, char *path2, char *path3, char *path4);
+int check_unique_paths(int argc, char *argv[]);
 void skip_white_space(FILE *file, char *c);
 int merge_files(const char *file1, const char *file2, const char *file_out_path);
 void write_to_base(int n, int base, FILE *file_out);
@@ -39,29 +38,38 @@ int get_absolute_path(const char *input_path, char *output_realpath) {
 
 // Функция для проверки, что пути всех файлов уникальны
 int check_all_unique_paths(int argc, char *argv[]) {
-    char realpath[PATH_MAX][argc - 2]; // Массив для хранения абсолютных путей
-    for (int i = 2; i < argc; ++i) {   // Начинаем с 2, т.к. argv[0] — имя программы, argv[1] — флаг
-        if (get_absolute_path(argv[i], realpath[i - 2]) != OK) return FILES_SAME;
+    char (*realpath)[MAX_PATH] = malloc((argc - 2) * MAX_PATH); // Массив для хранения абсолютных путей
+    if (!realpath) return FILES_SAME;
+
+    for (int i = 2; i < argc; ++i) {
+        if (get_absolute_path(argv[i], realpath[i - 2]) != OK) {
+            free(realpath);
+            return FILES_SAME;
+        }
     }
 
     // Сравниваем все пути между собой, чтобы убедиться в их уникальности
     for (int i = 0; i < argc - 3; ++i) {
         for (int j = i + 1; j < argc - 2; ++j) {
             if (strcmp(realpath[i], realpath[j]) == 0) {
+                free(realpath);
                 return FILES_SAME;
             }
         }
     }
+    free(realpath);
     return OK;
 }
 
 // Объединение файлов
 int merge_files(const char *file1, const char *file2, const char *file_out_path) {
-    FILE *file1_in = fopen(file1, "r");
-    FILE *file2_in = fopen(file2, "r");
-    FILE *file_out = fopen(file_out_path, "w");
+    FILE *file1_in;
+    FILE *file2_in;
+    FILE *file_out;
 
-    if (!file1_in || !file2_in || !file_out) {
+    if (fopen_s(&file1_in, file1, "r") != 0 ||
+        fopen_s(&file2_in, file2, "r") != 0 ||
+        fopen_s(&file_out, file_out_path, "w") != 0) {
         if (file1_in) fclose(file1_in);
         if (file2_in) fclose(file2_in);
         if (file_out) fclose(file_out);
@@ -114,13 +122,16 @@ void write_to_base(int n, int base, FILE *file_out) {
 
 // Преобразование лексем
 int change_words(const char *file_in_path, const char *file_out_path) {
-    FILE *file_in = fopen(file_in_path, "r");
-    FILE *file_out = fopen(file_out_path, "w");
-    if (!file_in || !file_out) {
+    FILE *file_in;
+    FILE *file_out;
+
+    if (fopen_s(&file_in, file_in_path, "r") != 0 ||
+        fopen_s(&file_out, file_out_path, "w") != 0) {
         if (file_in) fclose(file_in);
         if (file_out) fclose(file_out);
         return FILE_NOT_OPEN;
     }
+
 
     char c = ' ';
     int word_count = 1;
@@ -129,9 +140,9 @@ int change_words(const char *file_in_path, const char *file_out_path) {
     while (c != EOF) {
         // Лексема
         if (c != ' ' && c != '\t' && c != '\n' && c != '\r') {
-            if (word_count % 10 == 0) { // Каждая 10-я лексема
+            if (word_count % 10 == 0) {
                 while (c != EOF && c != ' ' && c != '\t' && c != '\n' && c != '\r') {
-                    if ((c >= 'A' && c <= 'Z')) c = c - 'A' + 'a'; // К нижнему регистру
+                    if ((c >= 'A' && c <= 'Z')) c = c - 'A' + 'a';
                     write_to_base(c, 4, file_out); // В систему счисления с основанием 4
                     c = fgetc(file_in);
                 }
@@ -143,7 +154,7 @@ int change_words(const char *file_in_path, const char *file_out_path) {
                 }
             } else if (word_count % 5 == 0) { // Каждая 5-я лексема
                 while (c != EOF && c != ' ' && c != '\t' && c != '\n' && c != '\r') {
-                    write_to_base(c, 8, file_out); // В систему счисления с основанием 8
+                    write_to_base(c, 8, file_out);
                     c = fgetc(file_in);
                 }
             } else { // Обычная лексема
@@ -175,17 +186,26 @@ int valid(int argc, char *argv[]) {
 
 int main(int argc, char *argv[]) {
     enum err mistake;
-    mistake = check_all_unique_paths(argc, argv);
-    if (mistake != OK) {
-        return mistake; // Прекращаем выполнение, если пути совпадают
-    }
+
     switch (valid(argc, argv)) {
         case OK:
+            mistake = check_all_unique_paths(argc, argv);
+            if (mistake != OK) {
+                printf("Error: пути файлов не должны совпадать.\n");
+                break;
+            }
             if (argv[1][1] == 'r') {
-                // Вызов merge_files для -r
+                if (argc != 5) {
+                    printf("Not enough command line arguments have been entered\n"); // Введено неверное количество аргументов командной строки
+                    break;
+                }
                 mistake = merge_files(argv[2], argv[3], argv[4]);
             } else if (argv[1][1] == 'a') {
-                // Вызов change_words для -a
+                if (argc != 4) {
+                    printf("Not enough command line arguments have been entered\n"); // Введено неверное количество аргументов командной строки
+
+                    break;
+                }
                 mistake = change_words(argv[2], argv[3]);
             }
 
