@@ -104,7 +104,7 @@ int main() {
     char* result_base2 = sumNumbers(2, 3, "0000000000", "0000101", "010");
     if (result_base2) {
         printf("Result: %s\n", result_base2);
-        free(result_base2); // Освобождаем память
+        free(result_base2);
     } else {
         printf("Error occurred during summation.\n");
     }
@@ -113,7 +113,7 @@ int main() {
     char* result_base3 = sumNumbers(3, 3, "000000000100002222222222222000000000000000000000002222222220000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000002222222222220000000000000000000000000000000000000000000000000000000000000000000000000000000000000", "0000101", "010");
     if (result_base3) {
         printf("Result: %s\n", result_base3);
-        free(result_base3); // Освобождаем память
+        free(result_base3);
     } else {
         printf("Error occurred during summation.\n");
     }
@@ -122,7 +122,7 @@ int main() {
     char* result_base16 = sumNumbers(16, 4, "A", "1F", "F", "234");
     if (result_base16) {
         printf("Result: %s\n", result_base16);
-        free(result_base16); // Освобождаем память
+        free(result_base16);
     } else {
         printf("Error occurred during summation.\n");
     }
@@ -131,7 +131,7 @@ int main() {
     char* result_base8 = sumNumbers(8, 3, "10", "7", "3");
     if (result_base8) {
         printf("Result: %s\n", result_base8);
-        free(result_base8); // Освобождаем память
+        free(result_base8);
     } else {
         printf("Error occurred during summation.\n");
     }
@@ -140,7 +140,7 @@ int main() {
     char* result_base4 = sumNumbers(4, 7, "10", "0", "3", "232", "1233", "13212", "12322112312312");
     if (result_base4) {
         printf("Result: %s\n", result_base4);
-        free(result_base4); // Освобождаем память
+        free(result_base4);
     } else {
         printf("Error occurred during summation.\n");
     }
@@ -149,7 +149,7 @@ int main() {
     char* result_base10 = sumNumbers(10, 1, "10");
     if (result_base8) {
         printf("Result: %s\n", result_base10);
-        free(result_base10); // Освобождаем память
+        free(result_base10);
     } else {
         printf("Error occurred during summation.\n");
     }
@@ -167,7 +167,7 @@ int main() {
     char* result_base30 = sumNumbers(30, 1, "1230Z");
     if (result_base30) {
         printf("Result: %s\n", result_base30);
-        free(result_base30); // Освобождаем память
+        free(result_base30);
     } else {
         printf("Error occurred during summation.\n");
     }
